@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusHire | Student Placement Portal</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="dashboard.css"><link rel="stylesheet" href="responsive.css">
+  <script src="storage.js" defer></script><script src="auth.js" defer></script>
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-brand">
+      <div class="brand-mark">CH</div><p class="eyebrow">YOUR CAREER STARTS HERE</p>
+      <h1>Make your<br><span>next move.</span></h1>
+      <p class="muted-light">Discover opportunities, track applications, and take the next step in your career.</p>
+      <div class="login-stats"><div><strong>120+</strong><span>Opportunities</span></div><div><strong>45+</strong><span>Companies</span></div><div><strong>86%</strong><span>Placement rate*</span></div></div>
+      <small>*Illustrative demo statistics.</small>
+    </section>
+    <section class="login-card">
+      <div class="mobile-brand"><div class="brand-mark">CH</div><strong>CampusHire</strong></div>
+      <p class="eyebrow">WELCOME BACK</p><h2>Sign in to your portal</h2><p class="muted">Sign in with your own student account or the separate administrator account.</p>
+      <form id="loginForm">
+        <label for="userName">Your name</label><input id="userName" name="userName" placeholder="Your full name" required minlength="2">
+        <label for="role">Continue as</label><select id="role" name="role"><option value="student">Student</option><option value="admin">Placement admin</option></select>
+        <label for="email">Email address</label><input id="email" name="email" type="email" placeholder="student@example.com" required autocomplete="username"><label for="password">Password</label><input id="password" name="password" type="password" placeholder="Enter your password" required autocomplete="current-password">
+        <button class="btn btn-primary full" type="submit">Enter CampusHire <span>→</span></button>
+      </form>
+      <div class="demo-note"><span class="dot"></span> Student accounts are created using registration. Admin sign-in is separate.</div>
+      <p class="muted" style="margin-top:18px">New to CampusHire? <a href="register.html" style="color:var(--primary);font-weight:700;text-decoration:none">Create an account</a></p><p class="tiny muted">Demo only: sign-in is browser-based, not secure authentication.</p>
+    </section>
+  </main>
+  <script>
+  const roleSelect=document.getElementById('role');
+  roleSelect.addEventListener('change',()=>{const admin=roleSelect.value==='admin';document.getElementById('userName').required=!admin;document.getElementById('userName').closest('label')?.toggleAttribute('hidden',admin);document.getElementById('userName').previousElementSibling?.toggleAttribute('hidden',admin);document.getElementById('userName').placeholder=admin?'Administrator name':'Your full name';document.getElementById('email').placeholder=admin?'admin@campushire.local':'student@example.com';});
+  document.getElementById('loginForm').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('userName').value.trim();const email=document.getElementById('email').value.trim().toLowerCase();const password=document.getElementById('password').value;const role=roleSelect.value;
+    if(role==='admin'){if(email!=='admin@campushire.local'||password!=='Admin@123'){alert('Invalid administrator credentials. Use the demo admin details listed in README.');return;}sessionStorage.setItem('chUser',JSON.stringify({name:'Placement Admin',email,role:'admin'}));location.href='admin-dashboard.html';return;}
+    if(!name||!email||!password){alert('Please complete all fields.');return;}const account=Store.getUsers().find(u=>u.email.toLowerCase()===email);if(!account){alert('No student account found. Please register first.');return;}if(account.name.toLowerCase()!==name.toLowerCase()){alert('Name does not match this account.');return;}if(account.password!==password){alert('Incorrect password. Please try again.');return;}sessionStorage.setItem('chUser',JSON.stringify({name:account.name,email:account.email,role:'student'}));const profiles=JSON.parse(localStorage.getItem('chProfilesByEmail')||'{}');const profile=profiles[email]||{name:account.name,email:account.email,course:account.course||'',year:'Third Year',phone:'',location:'',skills:'',about:''};Store.saveProfile(profile);location.href='student-dashboard.html';});
+  </script>
+</body></html>
